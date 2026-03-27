@@ -1,23 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Yusuf Mohmed Mamun | IT Portfolio</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Fraunces:wght@700;900&display=swap" rel="stylesheet"/>
   <style>
     :root {
-      --bg:       #f7f8fc;
-      --surface:  #ffffff;
-      --surface2: #f0f2f8;
-      --accent:   #2563eb;
-      --accent2:  #1d4ed8;
-      --accent-light: #eff6ff;
-      --text:     #111827;
-      --muted:    #6b7280;
-      --border:   #e5e7eb;
-      --shadow:   0 2px 16px rgba(37,99,235,0.07);
-      --shadow-hover: 0 8px 32px rgba(37,99,235,0.13);
+      --bg:          #f7f8fc;
+      --surface:     #ffffff;
+      --surface2:    #f0f2f8;
+      --accent:      #2563eb;
+      --accent2:     #1d4ed8;
+      --accent-light:#eff6ff;
+      --text:        #111827;
+      --muted:       #6b7280;
+      --border:      #e5e7eb;
+      --shadow:      0 2px 16px rgba(37,99,235,0.07);
+      --shadow-hover:0 8px 32px rgba(37,99,235,0.15);
+      --green:       #22c55e;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -31,17 +32,54 @@
       line-height: 1.6;
     }
 
-    /* subtle dot pattern */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
       background-image: radial-gradient(circle, #d1d5db 1px, transparent 1px);
       background-size: 28px 28px;
-      opacity: 0.45;
+      opacity: 0.4;
       pointer-events: none;
       z-index: 0;
     }
+
+    /* ── READING PROGRESS BAR ── */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), #60a5fa);
+      z-index: 9999;
+      transition: width 0.1s linear;
+      border-radius: 0 2px 2px 0;
+    }
+
+    /* ── BACK TO TOP ── */
+    #back-to-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 44px;
+      height: 44px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: var(--shadow-hover);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #back-to-top.visible { opacity: 1; transform: translateY(0); }
+    #back-to-top:hover { background: var(--accent2); transform: translateY(-3px); }
 
     /* ── NAV ── */
     nav {
@@ -55,19 +93,21 @@
       background: rgba(247,248,252,0.92);
       backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--border);
+      transition: box-shadow 0.3s;
     }
+
+    nav.scrolled { box-shadow: 0 4px 24px rgba(37,99,235,0.1); }
 
     .nav-logo {
       font-family: 'Fraunces', serif;
       font-size: 1.2rem;
       font-weight: 900;
       color: var(--accent);
-      letter-spacing: -0.02em;
     }
 
     .nav-links {
       display: flex;
-      gap: 2rem;
+      gap: 0.5rem;
       list-style: none;
       align-items: center;
     }
@@ -75,28 +115,23 @@
     .nav-links a {
       color: var(--muted);
       text-decoration: none;
-      font-size: 0.88rem;
+      font-size: 0.85rem;
       font-weight: 600;
-      transition: color 0.2s;
+      padding: 0.4rem 0.85rem;
+      border-radius: 100px;
+      transition: all 0.2s;
     }
 
-    .nav-links a:hover,
-    .nav-links a.active { color: var(--accent); }
+    .nav-links a:hover { color: var(--accent); background: var(--accent-light); }
+    .nav-links a.active { color: var(--accent); background: var(--accent-light); }
 
     .nav-resume {
-      padding: 0.5rem 1.2rem;
-      background: var(--accent);
+      background: var(--accent) !important;
       color: #fff !important;
-      border-radius: 6px;
-      font-size: 0.82rem !important;
-      font-weight: 600 !important;
-      transition: background 0.2s, transform 0.2s !important;
+      border-radius: 8px !important;
     }
 
-    .nav-resume:hover {
-      background: var(--accent2) !important;
-      transform: translateY(-1px);
-    }
+    .nav-resume:hover { background: var(--accent2) !important; }
 
     /* Hamburger */
     .hamburger {
@@ -131,7 +166,7 @@
       z-index: 99;
       padding: 1.5rem 2rem;
       flex-direction: column;
-      gap: 1rem;
+      gap: 0.8rem;
       box-shadow: var(--shadow);
     }
 
@@ -142,21 +177,42 @@
       text-decoration: none;
       font-size: 1rem;
       font-weight: 600;
-      padding: 0.5rem 0;
+      padding: 0.6rem 0;
       border-bottom: 1px solid var(--border);
       transition: color 0.2s;
     }
 
     .mobile-menu a:hover { color: var(--accent); }
 
-    /* ── SCROLL REVEAL ── */
+    /* ── SCROLL ANIMATIONS (bidirectional) ── */
     .reveal {
       opacity: 0;
-      transform: translateY(28px);
+      transform: translateY(35px);
       transition: opacity 0.6s ease, transform 0.6s ease;
     }
 
-    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal.from-left {
+      transform: translateX(-40px);
+    }
+
+    .reveal.from-right {
+      transform: translateX(40px);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+
+    /* When scrolling back up - reset */
+    .reveal.hidden {
+      opacity: 0;
+      transform: translateY(35px);
+    }
+
+    .reveal.from-left.hidden { transform: translateX(-40px); }
+    .reveal.from-right.hidden { transform: translateX(40px); }
+
     .reveal-delay-1 { transition-delay: 0.1s; }
     .reveal-delay-2 { transition-delay: 0.2s; }
     .reveal-delay-3 { transition-delay: 0.3s; }
@@ -178,6 +234,10 @@
 
     .hero-content { flex: 1; max-width: 620px; }
 
+    /* Parallax hero text */
+    .hero-parallax { will-change: transform; }
+
+    /* Profile photo */
     .hero-photo {
       flex-shrink: 0;
       width: 240px;
@@ -192,6 +252,13 @@
       background: var(--surface2);
       font-size: 5rem;
       animation: fadeUp 0.6s 0.5s ease both;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      cursor: default;
+    }
+
+    .hero-photo:hover {
+      transform: scale(1.05);
+      box-shadow: var(--shadow-hover), 0 0 0 10px var(--accent-light);
     }
 
     .hero-photo img { width: 100%; height: 100%; object-fit: cover; }
@@ -213,7 +280,7 @@
     .hero-tag-dot {
       width: 7px; height: 7px;
       border-radius: 50%;
-      background: var(--accent);
+      background: var(--green);
       animation: pulse 2s infinite;
     }
 
@@ -224,11 +291,22 @@
       line-height: 1.05;
       letter-spacing: -0.03em;
       margin-bottom: 1.5rem;
-      color: var(--text);
       animation: fadeUp 0.6s 0.1s ease both;
     }
 
     .hero h1 span { color: var(--accent); }
+
+    /* Typing cursor */
+    .typed-text::after {
+      content: '|';
+      color: var(--accent);
+      animation: blink 0.8s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
 
     .hero-sub {
       font-size: 1.05rem;
@@ -260,19 +338,10 @@
       border: none;
     }
 
-    .btn-primary {
-      background: var(--accent);
-      color: #fff;
-    }
-
+    .btn-primary { background: var(--accent); color: #fff; }
     .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,99,235,0.3); }
 
-    .btn-outline {
-      background: #fff;
-      color: var(--accent);
-      border: 1.5px solid var(--border);
-    }
-
+    .btn-outline { background: #fff; color: var(--accent); border: 1.5px solid var(--border); }
     .btn-outline:hover { border-color: var(--accent); background: var(--accent-light); transform: translateY(-2px); }
 
     .hero-badges {
@@ -300,13 +369,13 @@
     .badge-dot {
       width: 6px; height: 6px;
       border-radius: 50%;
-      background: #22c55e;
+      background: var(--green);
       animation: pulse 2s infinite;
     }
 
     @keyframes pulse {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(0.75); }
+      50%       { opacity: 0.5; transform: scale(0.75); }
     }
 
     @keyframes fadeUp {
@@ -314,7 +383,13 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── SHARED SECTION STYLES ── */
+    /* ── TILT CARD ── */
+    .tilt {
+      transform-style: preserve-3d;
+      transition: transform 0.15s ease, box-shadow 0.3s ease;
+    }
+
+    /* ── SECTIONS ── */
     section {
       position: relative;
       z-index: 1;
@@ -345,7 +420,6 @@
       letter-spacing: -0.03em;
       color: var(--text);
       margin-bottom: 3rem;
-      line-height: 1.15;
     }
 
     .divider {
@@ -385,8 +459,8 @@
       border-radius: 12px;
       padding: 1.5rem;
       text-align: center;
-      transition: all 0.25s;
       box-shadow: var(--shadow);
+      transition: all 0.25s;
     }
 
     .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); border-color: #bfdbfe; }
@@ -427,7 +501,7 @@
       box-shadow: var(--shadow);
     }
 
-    .lang-card:hover { transform: translateY(-2px); border-color: #bfdbfe; box-shadow: var(--shadow-hover); }
+    .lang-card:hover { transform: translateY(-3px); border-color: #bfdbfe; box-shadow: var(--shadow-hover); }
     .lang-flag { font-size: 1.4rem; }
     .lang-name { font-weight: 600; font-size: 0.88rem; color: var(--text); }
     .lang-level { font-size: 0.65rem; color: var(--accent); font-weight: 600; margin-top: 1px; }
@@ -457,11 +531,11 @@
       height: 3px;
       background: linear-gradient(90deg, var(--accent), #60a5fa);
       transform: scaleX(0);
-      transition: transform 0.3s;
+      transition: transform 0.35s;
       transform-origin: left;
     }
 
-    .skill-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); border-color: #bfdbfe; }
+    .skill-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); border-color: #bfdbfe; }
     .skill-card:hover::after { transform: scaleX(1); }
 
     .skill-icon { font-size: 2rem; margin-bottom: 1rem; }
@@ -475,8 +549,9 @@
       margin-bottom: 1rem;
     }
 
-    .skill-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.2rem; }
 
+    /* Tooltip */
     .skill-tag {
       font-size: 0.72rem;
       font-weight: 500;
@@ -485,6 +560,75 @@
       border: 1px solid var(--border);
       border-radius: 6px;
       color: var(--text);
+      position: relative;
+      cursor: default;
+      transition: all 0.2s;
+    }
+
+    .skill-tag:hover {
+      background: var(--accent-light);
+      border-color: #bfdbfe;
+      color: var(--accent);
+    }
+
+    .skill-tag[data-tip]:hover::after {
+      content: attr(data-tip);
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text);
+      color: #fff;
+      font-size: 0.65rem;
+      padding: 0.3rem 0.6rem;
+      border-radius: 5px;
+      white-space: nowrap;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .skill-tag[data-tip]:hover::before {
+      content: '';
+      position: absolute;
+      bottom: calc(100% + 1px);
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: var(--text);
+      z-index: 10;
+    }
+
+    /* Skill progress bars */
+    .skill-bar-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .skill-bar-item { display: flex; flex-direction: column; gap: 0.25rem; }
+
+    .skill-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .skill-bar-track {
+      height: 6px;
+      background: var(--surface2);
+      border-radius: 100px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .skill-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #60a5fa);
+      border-radius: 100px;
+      width: 0%;
+      transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
     }
 
     /* ── PROJECTS ── */
@@ -506,21 +650,19 @@
       box-shadow: var(--shadow);
     }
 
-    .project-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); border-color: #bfdbfe; }
+    .project-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); border-color: #bfdbfe; }
 
     .project-number {
       font-family: 'Fraunces', serif;
-      font-size: 2.2rem;
+      font-size: 2.5rem;
       font-weight: 900;
       color: #dbeafe;
       line-height: 1;
     }
 
     .project-card h3 { font-size: 1.05rem; font-weight: 700; color: var(--text); line-height: 1.35; }
-
-    .project-card p { font-size: 0.87rem; color: var(--muted); line-height: 1.8; flex: 1; }
-
-    .project-stack { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .project-card p  { font-size: 0.87rem; color: var(--muted); line-height: 1.8; flex: 1; }
+    .project-stack   { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 
     .stack-tag {
       font-size: 0.68rem;
@@ -549,16 +691,9 @@
 
     .exp-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: #bfdbfe; }
 
-    .exp-role { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 0.25rem; }
-
-    .exp-company {
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--accent);
-      margin-bottom: 0.75rem;
-    }
-
-    .exp-desc { font-size: 0.87rem; color: var(--muted); line-height: 1.8; }
+    .exp-role    { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 0.25rem; }
+    .exp-company { font-size: 0.78rem; font-weight: 600; color: var(--accent); margin-bottom: 0.75rem; }
+    .exp-desc    { font-size: 0.87rem; color: var(--muted); line-height: 1.8; }
 
     .exp-date {
       font-size: 0.72rem;
@@ -592,8 +727,8 @@
     }
 
     .cert-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: #bfdbfe; }
-    .cert-icon { font-size: 2.2rem; flex-shrink: 0; }
-    .cert-name { font-size: 0.9rem; font-weight: 700; color: var(--text); margin-bottom: 0.25rem; }
+    .cert-icon   { font-size: 2.2rem; flex-shrink: 0; }
+    .cert-name   { font-size: 0.9rem; font-weight: 700; color: var(--text); margin-bottom: 0.25rem; }
     .cert-issuer { font-size: 0.7rem; font-weight: 500; color: var(--muted); }
 
     /* ── CONTACT ── */
@@ -615,12 +750,11 @@
       font-weight: 900;
       margin-bottom: 1rem;
       letter-spacing: -0.02em;
-      color: var(--text);
     }
 
     .contact-left p { color: var(--muted); line-height: 1.8; font-size: 0.92rem; margin-bottom: 2rem; }
 
-    .contact-links { display: flex; flex-direction: column; gap: 0.8rem; }
+    .contact-links { display: flex; flex-direction: column; gap: 0.6rem; }
 
     .contact-link {
       display: flex;
@@ -630,10 +764,15 @@
       color: var(--muted);
       font-size: 0.82rem;
       font-weight: 500;
-      transition: color 0.2s;
       padding: 0.6rem 0.8rem;
       border-radius: 8px;
       transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+      background: none;
+      text-align: left;
+      width: 100%;
+      font-family: 'DM Sans', sans-serif;
     }
 
     .contact-link:hover { color: var(--accent); background: var(--accent-light); }
@@ -650,15 +789,21 @@
       flex-shrink: 0;
     }
 
-    .contact-form { display: flex; flex-direction: column; gap: 1rem; }
-
-    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
-
-    .form-group label {
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--text);
+    .copy-feedback {
+      margin-left: auto;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--green);
+      opacity: 0;
+      transition: opacity 0.3s;
     }
+
+    .copy-feedback.show { opacity: 1; }
+
+    .contact-form { display: flex; flex-direction: column; gap: 1rem; }
+    .form-group   { display: flex; flex-direction: column; gap: 0.4rem; }
+
+    .form-group label { font-size: 0.78rem; font-weight: 600; color: var(--text); }
 
     .form-group input,
     .form-group textarea {
@@ -702,7 +847,7 @@
     @media (max-width: 900px) {
       .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
       .hero { flex-direction: column-reverse; align-items: flex-start; gap: 2rem; }
-      .hero-photo { align-self: center; }
+      .hero-photo { align-self: center; width: 180px; height: 180px; }
     }
 
     @media (max-width: 768px) {
@@ -711,17 +856,34 @@
       .hamburger { display: flex; }
       section { padding: 4rem 1.5rem; }
       .hero { padding: 7rem 1.5rem 3rem; }
-      .contact-wrapper { grid-template-columns: 1fr; gap: 2.5rem; padding: 2rem; }
+      .contact-wrapper { grid-template-columns: 1fr; gap: 2.5rem; padding: 1.5rem; }
       .about-stats { grid-template-columns: 1fr 1fr; }
       .exp-card { grid-template-columns: 1fr; }
       .exp-date { text-align: left; width: fit-content; }
+      #back-to-top { bottom: 1.2rem; right: 1.2rem; width: 40px; height: 40px; font-size: 1rem; }
+      .hero-btns { flex-direction: column; }
+      .btn { justify-content: center; }
+    }
+
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 2.4rem; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .skills-grid { grid-template-columns: 1fr; }
+      .certs-grid { grid-template-columns: 1fr; }
+      .about-stats { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
 <body>
 
+  <!-- READING PROGRESS BAR -->
+  <div id="progress-bar"></div>
+
+  <!-- BACK TO TOP -->
+  <button id="back-to-top" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
   <!-- NAV -->
-  <nav>
+  <nav id="navbar">
     <div class="nav-logo">Yusuf M.</div>
     <ul class="nav-links">
       <li><a href="#about">About</a></li>
@@ -738,27 +900,28 @@
 
   <!-- MOBILE MENU -->
   <div class="mobile-menu" id="mobileMenu">
-    <a href="#about" onclick="closeMenu()">About</a>
-    <a href="#skills" onclick="closeMenu()">Skills</a>
-    <a href="#projects" onclick="closeMenu()">Projects</a>
+    <a href="#about"      onclick="closeMenu()">About</a>
+    <a href="#skills"     onclick="closeMenu()">Skills</a>
+    <a href="#projects"   onclick="closeMenu()">Projects</a>
     <a href="#experience" onclick="closeMenu()">Experience</a>
-    <a href="#contact" onclick="closeMenu()">Contact</a>
+    <a href="#contact"    onclick="closeMenu()">Contact</a>
     <a href="Yusuf_Mohmed_Mamun_Resume.pdf" target="_blank">Download Resume</a>
   </div>
 
   <!-- HERO -->
   <div class="hero">
-    <div class="hero-content">
+    <div class="hero-content hero-parallax">
       <div class="hero-tag">
         <div class="hero-tag-dot"></div>
         Available · Open to Relocate Across Canada
       </div>
-      <h1>Yusuf<br>Mohmed<br><span>Mamun</span></h1>
+      <h1>Yusuf<br>Mohmed<br><span class="typed-text" id="typed"></span></h1>
       <p class="hero-sub">
-        IT Support Specialist &amp; Systems Administrator with hands-on experience in networking, Windows Server infrastructure, cloud platforms, and enterprise IT environments.
+        IT Support Specialist &amp; Systems Administrator with hands-on experience in networking,
+        Windows Server infrastructure, cloud platforms, and enterprise IT environments.
       </p>
       <div class="hero-btns">
-        <a href="#contact" class="btn btn-primary">Get in Touch</a>
+        <a href="#contact"  class="btn btn-primary">Get in Touch</a>
         <a href="#projects" class="btn btn-outline">View Projects</a>
         <a href="https://github.com/YusufMM-systemtech" target="_blank" class="btn btn-outline">GitHub ↗</a>
       </div>
@@ -780,44 +943,27 @@
     <div class="section-label reveal">My Story</div>
     <h2 class="section-title reveal">About Me</h2>
     <div class="about-grid">
-      <div class="about-text reveal">
+      <div class="about-text reveal from-left">
         <p>I'm a <strong>Computer System Technician graduate</strong> from St. Lawrence College with a passion for building reliable IT infrastructure and solving real-world technical problems. Originally from India, I brought my curiosity for technology to Canada and turned it into a career path.</p>
-        <p>My hands-on experience spans <strong>Windows Server environments, Cisco networking, Red Hat Linux administration, and cloud platforms</strong> like Azure and AWS. I've built lab environments from scratch — configuring Active Directory, VLANs, DNS, DHCP, and more — skills that directly translate to enterprise IT support.</p>
+        <p>My hands-on experience spans <strong>Windows Server environments, Cisco networking, Red Hat Linux administration, and cloud platforms</strong> like Azure and AWS. I've built lab environments from scratch — configuring Active Directory, VLANs, DNS, DHCP, and more.</p>
         <p>Beyond the technical side, I've led teams, coordinated large-scale events, and worked directly with clients. I believe the best IT professionals are those who can <strong>communicate clearly, adapt quickly, and stay calm under pressure</strong> — and I bring all three.</p>
-        <p>I'm currently open to <strong>IT Support, Help Desk, and Junior SysAdmin roles</strong> anywhere in Canada — and I'm ready to relocate whenever needed.</p>
-
+        <p>I'm currently open to <strong>IT Support, Help Desk, and Junior SysAdmin roles</strong> anywhere in Canada — ready to relocate whenever needed.</p>
         <span class="lang-section-label">Languages I Speak</span>
         <div class="lang-grid">
-          <div class="lang-card">
-            <div class="lang-flag">🇨🇦</div>
-            <div><div class="lang-name">English</div><div class="lang-level">Professional · IELTS 7.0</div></div>
-          </div>
-          <div class="lang-card">
-            <div class="lang-flag">🇮🇳</div>
-            <div><div class="lang-name">Hindi</div><div class="lang-level">Native / Bilingual</div></div>
-          </div>
-          <div class="lang-card">
-            <div class="lang-flag">🇵🇰</div>
-            <div><div class="lang-name">Urdu</div><div class="lang-level">Native / Bilingual</div></div>
-          </div>
-          <div class="lang-card">
-            <div class="lang-flag">🇮🇳</div>
-            <div><div class="lang-name">Gujarati</div><div class="lang-level">Native / Bilingual</div></div>
-          </div>
-          <div class="lang-card">
-            <div class="lang-flag">🇸🇦</div>
-            <div><div class="lang-name">Arabic</div><div class="lang-level">Elementary</div></div>
-          </div>
+          <div class="lang-card"><div class="lang-flag">🇨🇦</div><div><div class="lang-name">English</div><div class="lang-level">Professional · IELTS 7.0</div></div></div>
+          <div class="lang-card"><div class="lang-flag">🇮🇳</div><div><div class="lang-name">Hindi</div><div class="lang-level">Native / Bilingual</div></div></div>
+          <div class="lang-card"><div class="lang-flag">🇵🇰</div><div><div class="lang-name">Urdu</div><div class="lang-level">Native / Bilingual</div></div></div>
+          <div class="lang-card"><div class="lang-flag">🇮🇳</div><div><div class="lang-name">Gujarati</div><div class="lang-level">Native / Bilingual</div></div></div>
+          <div class="lang-card"><div class="lang-flag">🇸🇦</div><div><div class="lang-name">Arabic</div><div class="lang-level">Elementary</div></div></div>
         </div>
       </div>
-
-      <div class="about-stats reveal reveal-delay-2">
-        <div class="stat-card"><div class="stat-number">500+</div><div class="stat-label">Client Cases Managed</div></div>
-        <div class="stat-card"><div class="stat-number">1,500+</div><div class="stat-label">Event Attendees Coordinated</div></div>
-        <div class="stat-card"><div class="stat-number">70+</div><div class="stat-label">Volunteers Led</div></div>
-        <div class="stat-card"><div class="stat-number">4</div><div class="stat-label">IT Lab Projects Built</div></div>
-        <div class="stat-card"><div class="stat-number">5</div><div class="stat-label">Languages Spoken</div></div>
-        <div class="stat-card"><div class="stat-number">3+</div><div class="stat-label">Years Customer Service</div></div>
+      <div class="about-stats reveal from-right">
+        <div class="stat-card"><div class="stat-number" data-target="500">0</div><div class="stat-label">Client Cases Managed</div></div>
+        <div class="stat-card"><div class="stat-number" data-target="1500">0</div><div class="stat-label">Event Attendees Coordinated</div></div>
+        <div class="stat-card"><div class="stat-number" data-target="70">0</div><div class="stat-label">Volunteers Led</div></div>
+        <div class="stat-card"><div class="stat-number" data-target="4">0</div><div class="stat-label">IT Lab Projects Built</div></div>
+        <div class="stat-card"><div class="stat-number" data-target="5">0</div><div class="stat-label">Languages Spoken</div></div>
+        <div class="stat-card"><div class="stat-number" data-target="3">0</div><div class="stat-label">Years Customer Service</div></div>
       </div>
     </div>
   </section>
@@ -829,45 +975,104 @@
     <div class="section-label reveal">What I Know</div>
     <h2 class="section-title reveal">Technical Skills</h2>
     <div class="skills-grid">
-      <div class="skill-card reveal reveal-delay-1">
+
+      <div class="skill-card tilt reveal reveal-delay-1 from-left">
         <div class="skill-icon">🌐</div>
         <h3>Networking</h3>
         <div class="skill-tags">
-          <span class="skill-tag">VLANs</span><span class="skill-tag">VTP</span>
-          <span class="skill-tag">EtherChannel</span><span class="skill-tag">Inter-VLAN Routing</span>
-          <span class="skill-tag">Port Security</span><span class="skill-tag">Cisco Packet Tracer</span>
-          <span class="skill-tag">TCP/IP</span><span class="skill-tag">DHCP</span>
-          <span class="skill-tag">DNS</span><span class="skill-tag">ACLs</span>
+          <span class="skill-tag" data-tip="Virtual LAN segmentation">VLANs</span>
+          <span class="skill-tag" data-tip="VLAN Trunking Protocol">VTP</span>
+          <span class="skill-tag" data-tip="Link aggregation for redundancy">EtherChannel</span>
+          <span class="skill-tag" data-tip="Layer 3 switching">Inter-VLAN Routing</span>
+          <span class="skill-tag" data-tip="Preventing unauthorized access">Port Security</span>
+          <span class="skill-tag" data-tip="Network simulation tool">Cisco Packet Tracer</span>
+          <span class="skill-tag" data-tip="Core internet protocol">TCP/IP</span>
+          <span class="skill-tag" data-tip="Dynamic Host Configuration">DHCP</span>
+          <span class="skill-tag" data-tip="Domain Name System">DNS</span>
+          <span class="skill-tag" data-tip="Access Control Lists">ACLs</span>
+        </div>
+        <div class="skill-bar-wrap">
+          <div class="skill-bar-item">
+            <div class="skill-bar-label"><span>Cisco Networking</span><span>85%</span></div>
+            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="85"></div></div>
+          </div>
+          <div class="skill-bar-item">
+            <div class="skill-bar-label"><span>TCP/IP & Protocols</span><span>80%</span></div>
+            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="80"></div></div>
+          </div>
         </div>
       </div>
-      <div class="skill-card reveal reveal-delay-2">
+
+      <div class="skill-card tilt reveal reveal-delay-2">
         <div class="skill-icon">🖥️</div>
         <h3>Systems Administration</h3>
         <div class="skill-tags">
-          <span class="skill-tag">Windows Server</span><span class="skill-tag">Active Directory</span>
-          <span class="skill-tag">WDS</span><span class="skill-tag">VirtualBox</span>
-          <span class="skill-tag">PowerShell</span><span class="skill-tag">Red Hat Linux</span>
-          <span class="skill-tag">Shell Scripting</span><span class="skill-tag">IT Troubleshooting</span>
+          <span class="skill-tag" data-tip="Enterprise server OS">Windows Server</span>
+          <span class="skill-tag" data-tip="User & group management">Active Directory</span>
+          <span class="skill-tag" data-tip="Windows Deployment Services">WDS</span>
+          <span class="skill-tag" data-tip="VM software">VirtualBox</span>
+          <span class="skill-tag" data-tip="Windows automation scripting">PowerShell</span>
+          <span class="skill-tag" data-tip="Enterprise Linux OS">Red Hat Linux</span>
+          <span class="skill-tag" data-tip="Bash automation">Shell Scripting</span>
+          <span class="skill-tag" data-tip="Diagnosing & fixing IT issues">IT Troubleshooting</span>
+        </div>
+        <div class="skill-bar-wrap">
+          <div class="skill-bar-item">
+            <div class="skill-bar-label"><span>Windows Server</span><span>88%</span></div>
+            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="88"></div></div>
+          </div>
+          <div class="skill-bar-item">
+            <div class="skill-bar-label"><span>Linux Administration</span><span>78%</span></div>
+            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="78"></div></div>
+          </div>
         </div>
       </div>
-      <div class="skill-card reveal reveal-delay-3">
+
+      <div class="skill-card tilt reveal reveal-delay-3 from-right">
         <div class="skill-icon">☁️</div>
         <h3>Cloud &amp; Platforms</h3>
         <div class="skill-tags">
-          <span class="skill-tag">Microsoft Azure</span><span class="skill-tag">AWS</span>
-          <span class="skill-tag">Cloud Foundations</span><span class="skill-tag">VM Deployment</span>
-          <span class="skill-tag">IAM</span>
+          <span class="skill-tag" data-tip="Microsoft's cloud platform">Microsoft Azure</span>
+          <span class="skill-tag" data-tip="Amazon Web Services">AWS</span>
+          <span class="skill-tag" data-tip="AWS foundational certification">Cloud Foundations</span>
+          <span class="skill-tag" data-tip="Deploying virtual machines">VM Deployment</span>
+          <span class="skill-tag" data-tip="Identity & Access Management">IAM</span>
+        </div>
+        <div class="skill-bar-wrap">
+          <div class="skill-bar-item">
+            <div class="skill-bar-label"><span>Microsoft Azure</span><span>75%</span></div>
+            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="75"></div></div>
+          </div>
+          <div class="skill-bar-item">
+            <div class="skill-bar-label"><span>AWS</span><span>70%</span></div>
+            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="70"></div></div>
+          </div>
         </div>
       </div>
-      <div class="skill-card reveal reveal-delay-4">
+
+      <div class="skill-card tilt reveal reveal-delay-4 from-right">
         <div class="skill-icon">💾</div>
         <h3>Dev &amp; Data Tools</h3>
         <div class="skill-tags">
-          <span class="skill-tag">Python</span><span class="skill-tag">MySQL</span>
-          <span class="skill-tag">Tableau</span><span class="skill-tag">HTML/CSS</span>
-          <span class="skill-tag">Adobe Scan</span><span class="skill-tag">Cantax</span>
+          <span class="skill-tag" data-tip="General purpose programming">Python</span>
+          <span class="skill-tag" data-tip="Relational database management">MySQL</span>
+          <span class="skill-tag" data-tip="Data visualization tool">Tableau</span>
+          <span class="skill-tag" data-tip="Web development basics">HTML/CSS</span>
+          <span class="skill-tag" data-tip="Document scanning tool">Adobe Scan</span>
+          <span class="skill-tag" data-tip="Tax e-filing software">Cantax</span>
+        </div>
+        <div class="skill-bar-wrap">
+          <div class="skill-bar-item">
+            <div class="skill-bar-label"><span>Python</span><span>72%</span></div>
+            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="72"></div></div>
+          </div>
+          <div class="skill-bar-item">
+            <div class="skill-bar-label"><span>MySQL</span><span>68%</span></div>
+            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="68"></div></div>
+          </div>
         </div>
       </div>
+
     </div>
   </section>
 
@@ -878,7 +1083,7 @@
     <div class="section-label reveal">What I Built</div>
     <h2 class="section-title reveal">Lab Projects</h2>
     <div class="projects-grid">
-      <div class="project-card reveal reveal-delay-1">
+      <div class="project-card tilt reveal reveal-delay-1 from-left">
         <div class="project-number">01</div>
         <h3>Windows Server Infrastructure Lab</h3>
         <p>Built a fully functional Windows Server 2019 environment using VirtualBox with DHCP, DNS, WDS, and Active Directory from scratch. Automated user and group creation using PowerShell and implemented domain policies and access controls.</p>
@@ -887,7 +1092,7 @@
           <span class="stack-tag">DHCP · DNS · WDS</span><span class="stack-tag">Active Directory</span><span class="stack-tag">PowerShell</span>
         </div>
       </div>
-      <div class="project-card reveal reveal-delay-2">
+      <div class="project-card tilt reveal reveal-delay-2">
         <div class="project-number">02</div>
         <h3>Multi-VLAN Enterprise Network</h3>
         <p>Designed and deployed a multi-switch network topology in Cisco Packet Tracer featuring VLANs, VTP, EtherChannel for link aggregation, inter-VLAN routing via Layer 3 switching, and port security to prevent unauthorized access.</p>
@@ -896,7 +1101,7 @@
           <span class="stack-tag">EtherChannel</span><span class="stack-tag">Port Security</span><span class="stack-tag">ACLs</span>
         </div>
       </div>
-      <div class="project-card reveal reveal-delay-3">
+      <div class="project-card tilt reveal reveal-delay-3 from-right">
         <div class="project-number">03</div>
         <h3>Azure Cloud Infrastructure</h3>
         <p>Deployed and managed cloud resources on Microsoft Azure including virtual machines, storage accounts, and networking components. Gained hands-on experience with resource management, monitoring, and identity access management.</p>
@@ -905,7 +1110,7 @@
           <span class="stack-tag">Storage</span><span class="stack-tag">IAM</span><span class="stack-tag">Monitoring</span>
         </div>
       </div>
-      <div class="project-card reveal reveal-delay-4">
+      <div class="project-card tilt reveal reveal-delay-4 from-right">
         <div class="project-number">04</div>
         <h3>Linux Server Simulation (Red Hat)</h3>
         <p>Deployed and configured Apache web server and MySQL database on Red Hat Enterprise Linux. Implemented user management, firewall hardening, and automated backups using cron jobs and shell scripts.</p>
@@ -924,23 +1129,23 @@
     <div class="section-label reveal">Where I've Been</div>
     <h2 class="section-title reveal">Experience &amp; Education</h2>
     <div class="exp-list">
-      <div class="exp-card reveal">
+      <div class="exp-card tilt reveal from-left">
         <div>
           <div class="exp-role">Diploma — Computer System Technician</div>
           <div class="exp-company">St. Lawrence College · Kingston / Toronto, ON</div>
-          <div class="exp-desc">Two-year program covering networking, systems administration, cloud computing, database management, Linux, and scripting. Completed hands-on lab projects in Windows Server, Cisco networking, Red Hat Linux, and Azure. Recognized as Student Ambassador for leadership and community engagement.</div>
+          <div class="exp-desc">Two-year program covering networking, systems administration, cloud computing, database management, Linux, and scripting. Completed hands-on lab projects in Windows Server, Cisco networking, Red Hat Linux, and Azure. Recognized as Student Ambassador for leadership and engagement.</div>
         </div>
         <div class="exp-date">May 2024 – Aug 2025</div>
       </div>
-      <div class="exp-card reveal">
+      <div class="exp-card tilt reveal from-right">
         <div>
           <div class="exp-role">Data Entry &amp; Immigration Assistant</div>
           <div class="exp-company">Firoz Nandhla Immigration Services · Mississauga, ON</div>
-          <div class="exp-desc">Managed accurate data entry and digital record management for 500+ client tax and immigration cases. Prepared and submitted visa applications via IRCC portals. Achieved 92% data accuracy and reduced processing time by 30% through streamlined workflows.</div>
+          <div class="exp-desc">Managed accurate data entry and digital record management for 500+ client tax and immigration cases. Prepared and submitted visa applications via IRCC portals. Achieved 92% data accuracy and reduced processing time by 30%.</div>
         </div>
         <div class="exp-date">Jan 2025 – Aug 2025</div>
       </div>
-      <div class="exp-card reveal">
+      <div class="exp-card tilt reveal from-left">
         <div>
           <div class="exp-role">Student Ambassador &amp; Event Coordinator</div>
           <div class="exp-company">St. Lawrence College · Toronto / Mississauga, ON</div>
@@ -948,11 +1153,11 @@
         </div>
         <div class="exp-date">Oct 2024 – Aug 2025</div>
       </div>
-      <div class="exp-card reveal">
+      <div class="exp-card tilt reveal from-right">
         <div>
           <div class="exp-role">Customer Representative Specialist</div>
           <div class="exp-company">Pizza Hut · Ottawa, ON</div>
-          <div class="exp-desc">Operated in a fast-paced environment requiring strong multitasking, time management, and team coordination — all skills directly transferable to IT support. Maintained 98% accuracy and improved kitchen workflow efficiency during peak hours.</div>
+          <div class="exp-desc">Operated in a fast-paced environment requiring strong multitasking, time management, and team coordination — skills directly transferable to IT support. Maintained 98% accuracy and improved kitchen workflow efficiency during peak hours.</div>
         </div>
         <div class="exp-date">Oct 2025 – Present</div>
       </div>
@@ -966,19 +1171,19 @@
     <div class="section-label reveal">Credentials</div>
     <h2 class="section-title reveal">Certifications</h2>
     <div class="certs-grid">
-      <div class="cert-card reveal reveal-delay-1">
+      <div class="cert-card tilt reveal reveal-delay-1 from-left">
         <div class="cert-icon">☁️</div>
         <div><div class="cert-name">AWS Cloud Foundations</div><div class="cert-issuer">Amazon Web Services · 2025</div></div>
       </div>
-      <div class="cert-card reveal reveal-delay-2">
+      <div class="cert-card tilt reveal reveal-delay-2">
         <div class="cert-icon">🛡️</div>
         <div><div class="cert-name">Ontario Security Guard Licence</div><div class="cert-issuer">Province of Ontario</div></div>
       </div>
-      <div class="cert-card reveal reveal-delay-3">
+      <div class="cert-card tilt reveal reveal-delay-3 from-right">
         <div class="cert-icon">❤️</div>
         <div><div class="cert-name">Emergency First Aid &amp; CPR/AED Level C</div><div class="cert-issuer">Red Cross Canada</div></div>
       </div>
-      <div class="cert-card reveal reveal-delay-4">
+      <div class="cert-card tilt reveal reveal-delay-4 from-right">
         <div class="cert-icon">🎓</div>
         <div><div class="cert-name">Diploma — Computer System Technician</div><div class="cert-issuer">St. Lawrence College · Aug 2025</div></div>
       </div>
@@ -995,16 +1200,18 @@
         <h2>Open to IT Opportunities Across Canada</h2>
         <p>Actively looking for IT Support, Help Desk, and Junior Systems Administrator roles anywhere in Canada. Willing to relocate — I respond to every message promptly.</p>
         <div class="contact-links">
-          <a href="mailto:Yusufmamun4@gmail.com" class="contact-link">
-            <div class="contact-link-icon">✉️</div>Yusufmamun4@gmail.com
-          </a>
+          <button class="contact-link" onclick="copyEmail()">
+            <div class="contact-link-icon">✉️</div>
+            Yusufmamun4@gmail.com
+            <span class="copy-feedback" id="copy-feedback">Copied!</span>
+          </button>
           <a href="https://www.linkedin.com/in/yusuf-mohmed-mamun" target="_blank" class="contact-link">
             <div class="contact-link-icon">💼</div>linkedin.com/in/yusuf-mohmed-mamun
           </a>
           <a href="https://github.com/YusufMM-systemtech" target="_blank" class="contact-link">
             <div class="contact-link-icon">🐙</div>github.com/YusufMM-systemtech
           </a>
-          <div class="contact-link">
+          <div class="contact-link" style="cursor:default;">
             <div class="contact-link-icon">📍</div>Canada · Open to Relocate
           </div>
         </div>
@@ -1012,11 +1219,11 @@
       <form class="contact-form" onsubmit="handleSubmit(event)">
         <div class="form-group">
           <label>Your Name</label>
-          <input type="text" placeholder="John Smith" required />
+          <input type="text" placeholder="John Smith" required/>
         </div>
         <div class="form-group">
           <label>Your Email</label>
-          <input type="email" placeholder="john@company.com" required />
+          <input type="email" placeholder="john@company.com" required/>
         </div>
         <div class="form-group">
           <label>Message</label>
@@ -1037,7 +1244,23 @@
   </footer>
 
   <script>
-    // Hamburger
+    // ── TYPING ANIMATION ──
+    const typedEl = document.getElementById('typed');
+    const words   = ['Mamun', 'IT Specialist', 'SysAdmin', 'Problem Solver'];
+    let   wIndex  = 0, cIndex = 0, deleting = false;
+
+    function type() {
+      const word    = words[wIndex];
+      const current = deleting ? word.substring(0, cIndex--) : word.substring(0, cIndex++);
+      typedEl.textContent = current;
+      let speed = deleting ? 60 : 100;
+      if (!deleting && cIndex === word.length + 1) { speed = 1800; deleting = true; }
+      if (deleting && cIndex === 0) { deleting = false; wIndex = (wIndex + 1) % words.length; speed = 300; }
+      setTimeout(type, speed);
+    }
+    setTimeout(type, 800);
+
+    // ── HAMBURGER ──
     const hamburger = document.getElementById('hamburger');
     const mobileMenu = document.getElementById('mobileMenu');
     hamburger.addEventListener('click', () => {
@@ -1049,15 +1272,30 @@
       mobileMenu.classList.remove('open');
     }
 
-    // Scroll reveal
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    // ── READING PROGRESS BAR ──
+    const progressBar = document.getElementById('progress-bar');
+    window.addEventListener('scroll', () => {
+      const scrollTop  = window.scrollY;
+      const docHeight  = document.body.scrollHeight - window.innerHeight;
+      const pct        = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      progressBar.style.width = pct + '%';
+    });
 
-    // Active nav
-    const sections = document.querySelectorAll('section[id]');
-    const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+    // ── BACK TO TOP ──
+    const backToTop = document.getElementById('back-to-top');
+    window.addEventListener('scroll', () => {
+      backToTop.classList.toggle('visible', window.scrollY > 400);
+    });
+
+    // ── NAV SHADOW ON SCROLL ──
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 20);
+    });
+
+    // ── ACTIVE NAV HIGHLIGHT ──
+    const sections  = document.querySelectorAll('section[id]');
+    const navLinks  = document.querySelectorAll('.nav-links a[href^="#"]');
     window.addEventListener('scroll', () => {
       let current = '';
       sections.forEach(s => { if (window.scrollY >= s.offsetTop - 130) current = s.id; });
@@ -1067,7 +1305,94 @@
       });
     });
 
-    // Form submit
+    // ── BIDIRECTIONAL SCROLL REVEAL ──
+    const reveals = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          entry.target.classList.remove('hidden');
+        } else {
+          // Only reset if scrolling back up (element is above viewport)
+          const rect = entry.target.getBoundingClientRect();
+          if (rect.top > window.innerHeight * 0.8) {
+            entry.target.classList.remove('visible');
+            entry.target.classList.add('hidden');
+          }
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+
+    reveals.forEach(el => revealObserver.observe(el));
+
+    // ── COUNTER ANIMATION ──
+    const counters = document.querySelectorAll('.stat-number[data-target]');
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const el     = entry.target;
+          const target = parseInt(el.dataset.target);
+          const suffix = target >= 500 ? '+' : (target >= 3 && target < 10 ? '+' : '');
+          let current  = 0;
+          const step   = Math.ceil(target / 60);
+          const timer  = setInterval(() => {
+            current += step;
+            if (current >= target) { current = target; clearInterval(timer); }
+            el.textContent = current.toLocaleString() + suffix;
+          }, 25);
+          counterObserver.unobserve(el);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    counters.forEach(el => counterObserver.observe(el));
+
+    // ── SKILL PROGRESS BARS ──
+    const bars = document.querySelectorAll('.skill-bar-fill');
+    const barObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.width = entry.target.dataset.width + '%';
+          barObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+
+    bars.forEach(bar => barObserver.observe(bar));
+
+    // ── PARALLAX HERO ──
+    const heroParallax = document.querySelector('.hero-parallax');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY < window.innerHeight) {
+        heroParallax.style.transform = `translateY(${window.scrollY * 0.18}px)`;
+      }
+    }, { passive: true });
+
+    // ── 3D TILT EFFECT ──
+    document.querySelectorAll('.tilt').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect   = card.getBoundingClientRect();
+        const x      = e.clientX - rect.left - rect.width  / 2;
+        const y      = e.clientY - rect.top  - rect.height / 2;
+        const tiltX  = -(y / rect.height) * 8;
+        const tiltY  =  (x / rect.width)  * 8;
+        card.style.transform = `perspective(700px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateY(-4px)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+      });
+    });
+
+    // ── COPY EMAIL ──
+    function copyEmail() {
+      navigator.clipboard.writeText('Yusufmamun4@gmail.com').then(() => {
+        const fb = document.getElementById('copy-feedback');
+        fb.classList.add('show');
+        setTimeout(() => fb.classList.remove('show'), 2000);
+      });
+    }
+
+    // ── FORM SUBMIT ──
     function handleSubmit(e) {
       e.preventDefault();
       const btn = e.target.querySelector('button[type="submit"]');
@@ -1080,5 +1405,6 @@
       }, 3000);
     }
   </script>
+
 </body>
 </html>
