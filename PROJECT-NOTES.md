@@ -19,7 +19,6 @@ under "Open requests" and sign your name + date.** When it's done, move it to
 
 | # | What's needed | Who needs it | From | Date |
 |---|---------------|--------------|------|------|
-| 2 | Talking-avatar intro video (MP4, ~30s) — the `playIntro` button currently just shows "Intro video coming soon"; needs a real file wired in | Claude Code | Yusuf | 2026-07-20 |
 | 3 | Real GitHub repos for the 4 lab projects, so cards link to proof | Claude Code | Yusuf | 2026-07-20 |
 | 4 | Free Web3Forms access key (web3forms.com) to make the contact form send email | Claude Code | Yusuf | 2026-07-20 |
 | 5 | Confirm Emergency First Aid cert issue date (currently undated) | Claude Code | Yusuf | 2026-07-20 |
@@ -30,6 +29,7 @@ under "Open requests" and sign your name + date.** When it's done, move it to
 | — | Built 3 full portfolio directions with real resume content | Claude Design | 2026-07-20 |
 | — | Removed GitHub links (none existed yet) | Claude Design | 2026-07-20 |
 | 1 | Only the Terminal Ops direction was ever exported locally (Editorial/Blueprint never downloaded); Yusuf chose Terminal Ops as final. Cleaned repo (dropped unused `profile.png`, old resume, stray `uploads/` reference files) and pushed live. | Claude Code | 2026-07-21 |
+| 2 | Added `intro.mp4` (voice-cloned via ElevenLabs, lip-synced via OmniHuman 1.5) and rewrote the `playIntro` handler so it actually opens and plays the video instead of showing "coming soon." Note: video rendered 1440x1440 (square), not the requested 16:9. | Claude Code | 2026-07-21 |
 
 ---
 
